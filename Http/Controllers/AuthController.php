@@ -1,8 +1,8 @@
 <?php
 namespace App\Modules\Auth\Http\Controllers;
 
-use App\Role;
-use App\UserData;
+use App\Modules\Core\Role;
+use App\Modules\Core\UserData;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
