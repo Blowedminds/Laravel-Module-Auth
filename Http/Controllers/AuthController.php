@@ -2,6 +2,7 @@
 namespace App\Modules\Auth\Http\Controllers;
 
 use App\Modules\Core\Role;
+use App\Modules\Core\User;
 use App\Modules\Core\UserData;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -57,7 +58,7 @@ class AuthController extends Controller
 
     $unique_id = uniqid('user');
 
-    $user = new \App\User([
+    $user = new User([
         'user_id' => $unique_id,
         'name' => request()->input('name'),
         'email' => request()->input('email'),
