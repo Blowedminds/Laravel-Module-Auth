@@ -12,7 +12,6 @@ This module supports authentication backend for Angular-Module-Auth
 1. Login
 2. Logout
 3. Register
-4. Reset Password
 
 **Installation**
 1. Add the module to Laravel project as a submodule. 
