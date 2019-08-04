@@ -7,6 +7,7 @@ use App\Modules\Core\User;
 use App\Modules\Core\UserData;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -33,9 +34,10 @@ class AuthController extends Controller
     {
         app('auth')->invalidate(app('auth')->getToken());
 
-        return response()->json(true, 200);
+        return response()->json();
     }
 
+    //This is an example of how to register a user with JWT, this is not functional and has no route
     public function register()
     {
         $messages = [
@@ -44,7 +46,7 @@ class AuthController extends Controller
             'email.email' => 'E-posta adresiniz geçersiz, lütfen geçerli bir e-posta adresi giriniz',
             'email.unique' => 'Bu e-posta adresi zaten kullanılıyor',
             'password.required' => 'Şifre gerekli, lütfen şifrenizi giriniz',
-            'password.min' => 'Şifreniz en az 6 karakterli olmalı',
+            'password.min' => 'Şifreniz en az 8 karakterli olmalı',
             'password.confirmed' => 'Şifreleriniz uyuşmuyor, kontrol ediniz',
             'password_confirmation.required' => 'Şifre tekrarı gerekli'
         ];
@@ -52,18 +54,18 @@ class AuthController extends Controller
         request()->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:8|confirmed',
             'password_confirmation' => 'required',
             'role_id' => 'required'
         ], $messages);
 
-        $unique_id = uniqid('user');
+        $unique_id = uniqid('user', true);
 
         $user = new User([
             'user_id' => $unique_id,
             'name' => request()->input('name'),
             'email' => request()->input('email'),
-            'password' => app('hash')->make(request()->input('password')),
+            'password' => Hash::make(request()->input('password')),
         ]);
 
         $user->save();
@@ -88,24 +90,15 @@ class AuthController extends Controller
             'password' => 'required|min:6|confirmed',
             'password_confirmation' => 'required',
         ]);
-        
-        $user = auth()->user();
 
-        $user->password = app('hash')->make(request()->input('password'));
+        auth()->user()->update(['password' => Hash::make(request()->input('password'))]);
 
-        $user->save();
-
-        return response()->json([
-           'header' => 'İşlem Başarılı',
-           'message' => 'Parola başarılı bir şekilde güncellendi',
-           'action' => 'Tamam',
-           'state' => 'success'
-        ]);
+        return response()->json();
     }
 
     public function isAuthenticated()
     {
-        return response()->json((bool)auth()->user(), 200);
+        return response()->json(['authenticated' => (bool)auth()->user()]);
     }
 
     private static function _login($credentials)
